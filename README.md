@@ -1,56 +1,66 @@
 # Finance Assistant Bot
 
 <p align="center">
-  <img src="project-catalog-images/01-main-cover.png" alt="Finance Assistant Bot project cover" width="900" />
+  <img src="docs/images/readme-hero.png" alt="Finance Assistant Bot portfolio demo cover" width="1000" />
+</p>
+
+<p align="center">
+  <strong>Portfolio demo repository</strong> for a Telegram finance assistant with a FastAPI backend and responsive WebApp dashboard.
 </p>
 
 <p align="center">
   <img alt="Python" src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" />
-  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-Backend-009688?style=flat-square&logo=fastapi&logoColor=white" />
-  <img alt="Telegram" src="https://img.shields.io/badge/Telegram-WebApp-26A5E4?style=flat-square&logo=telegram&logoColor=white" />
-  <img alt="Docker" src="https://img.shields.io/badge/Docker-Ready-2496ED?style=flat-square&logo=docker&logoColor=white" />
+  <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white" />
+  <img alt="Telegram" src="https://img.shields.io/badge/Telegram-Bot_+_WebApp-26A5E4?style=flat-square&logo=telegram&logoColor=white" />
+  <img alt="SQLAlchemy" src="https://img.shields.io/badge/SQLAlchemy-Alembic-D71F00?style=flat-square" />
+  <img alt="Docker" src="https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white" />
 </p>
 
-Finance Assistant Bot is a full-stack finance manager for Telegram. It combines a Telegram bot, FastAPI backend, SQLAlchemy/Alembic persistence, budget automation, CSV/XLSX import/export, and a responsive Telegram WebApp dashboard for analytics, goals, transaction history, and AI-assisted insights.
+## Demo Positioning
+
+This repository is intentionally shaped as a public portfolio/demo project. It shows the architecture, UX, API design, data modeling, and delivery quality behind a finance assistant MVP.
+
+It is not a dump of private client production code. The public version uses demo-friendly configuration, seeded/local screenshots, placeholder environment values, and excludes real secrets, production data, deployment credentials, and client-specific business rules.
+
+Good GitHub topics for this repository:
+
+```text
+portfolio, demo-project, telegram-bot, fastapi, finance-dashboard, webapp, sqlalchemy, docker
+```
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td width="50%">
-      <img src="project-catalog-images/02-dashboard-ui.png" alt="Dashboard with KPI cards and analytics chart" />
-    </td>
-    <td width="50%">
-      <img src="project-catalog-images/03-user-flow.png" alt="Finance app user flow screens" />
-    </td>
-  </tr>
-  <tr>
-    <td align="center"><strong>Dashboard analytics</strong></td>
-    <td align="center"><strong>Core product flow</strong></td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="project-catalog-images/04-system-structure.png" alt="System architecture diagram" />
-    </td>
-    <td width="50%">
-      <img src="project-catalog-images/05-responsive-preview.png" alt="Responsive desktop tablet and mobile preview" />
-    </td>
-  </tr>
-  <tr>
-    <td align="center"><strong>System structure</strong></td>
-    <td align="center"><strong>Responsive WebApp</strong></td>
-  </tr>
-</table>
+<p align="center">
+  <img src="docs/images/readme-dashboard.png" alt="Finance Assistant dashboard preview" width="1000" />
+</p>
 
-## Features
+<p align="center">
+  <img src="docs/images/readme-responsive.png" alt="Responsive Telegram WebApp preview" width="1000" />
+</p>
 
-- Telegram bot onboarding with `/start`, currency preferences, inline menus, quick category selection, and transaction parsing.
-- FastAPI REST API for analytics, budgets, exports, Telegram webhook processing, and WebApp data.
-- Responsive Telegram WebApp with KPI cards, charts, category budgets, savings goals, transaction filters, calendar history, and settings.
-- SQLAlchemy models with Alembic migrations; local SQLite support and Docker-ready PostgreSQL setup.
-- Optional Redis/APScheduler reminders for budget monitoring and recurring checks.
-- CSV/XLSX statement import, CSV export, receipt extraction service, and optional OpenAI-powered assistant features.
-- Production-oriented project shape: Dockerfile, docker-compose, healthcheck, logging, environment-based configuration, and tests.
+<p align="center">
+  <img src="docs/images/readme-demo-scope.png" alt="Portfolio demo scope and product flow" width="1000" />
+</p>
+
+## What It Demonstrates
+
+- Telegram bot flows: onboarding, command handlers, inline menus, category actions, transaction parsing, and webhook processing.
+- FastAPI backend: versioned REST routes, dependency wiring, healthcheck, analytics, budgets, exports, and Telegram integration endpoints.
+- Data layer: async SQLAlchemy models, Alembic migrations, SQLite for local development, and Docker-ready PostgreSQL-style configuration.
+- WebApp dashboard: responsive Telegram WebApp UI with KPI cards, charts, filters, budgets, savings goals, transaction history, settings, and assistant view.
+- Import/export workflows: CSV/XLSX statement import, CSV exports, and receipt/assistant service boundaries.
+- Delivery practices: Docker setup, environment-based settings, logging, migrations, tests, and clean repository hygiene.
+
+## Feature Map
+
+| Area | Demo capability |
+| --- | --- |
+| Bot | `/start`, quick actions, transaction parsing, reports, export entry points |
+| API | Analytics, budgets, WebApp data, Telegram webhook, healthcheck |
+| WebApp | Overview, operations, goals, history, AI assistant, settings |
+| Data | Transactions, categories, budgets, user preferences, assistant feedback |
+| Automation | Budget monitoring and reminder service structure |
+| AI-ready services | Receipt extraction and assistant wrappers with optional OpenAI configuration |
 
 ## Tech Stack
 
@@ -58,7 +68,7 @@ Finance Assistant Bot is a full-stack finance manager for Telegram. It combines 
 | --- | --- |
 | Bot | `python-telegram-bot`, Telegram Webhooks, Telegram WebApp |
 | API | FastAPI, Pydantic, Uvicorn |
-| Data | SQLAlchemy async, Alembic, SQLite/PostgreSQL |
+| Data | SQLAlchemy async, Alembic, SQLite/PostgreSQL-ready settings |
 | Automation | APScheduler, optional Redis |
 | WebApp | HTML, CSS, vanilla JavaScript, Chart.js |
 | AI / Import | OpenAI SDK, Pandas, OpenPyXL |
@@ -82,8 +92,7 @@ manager-bot/
 |-- migrations/       # Alembic migrations
 |-- tests/            # parser/date tests
 |-- webapp/           # Telegram WebApp frontend
-|-- project-catalog-images/
-|   `-- *.png         # README/project preview screenshots
+|-- docs/images/      # README presentation images
 |-- docker-compose.yml
 |-- Dockerfile
 |-- pyproject.toml
@@ -92,13 +101,13 @@ manager-bot/
 
 ## Quick Start
 
-Create environment settings:
+Create local environment settings:
 
 ```bash
 cp .env.example .env
 ```
 
-Fill the required values in `.env`:
+Fill the values you need:
 
 ```env
 TELEGRAM_BOT_TOKEN=your-telegram-bot-token
@@ -107,22 +116,17 @@ ADMIN_API_KEY=your-admin-api-key
 OPENAI_API_KEY=your-openai-api-key
 ```
 
-Run the full stack with Docker:
+Run with Docker:
 
 ```bash
 docker compose up --build
 ```
 
-Open the API:
+Useful local URLs:
 
 ```text
-http://localhost:8000
-```
-
-Healthcheck:
-
-```text
-GET /health/ping
+API:         http://localhost:8000
+Healthcheck: http://localhost:8000/health/ping
 ```
 
 ## Local Development
@@ -161,14 +165,22 @@ For local Telegram webhook testing, fill `NGROK_AUTHTOKEN` in `.env` and keep `W
 https://<ngrok-domain>/telegram/webhook/<secret>
 ```
 
-Start the services:
+Start the relevant services:
 
 ```bash
 docker compose up --build api db redis ngrok
 ```
 
-## Notes For Portfolio Review
+## Public Demo Boundaries
 
-- The screenshots in `project-catalog-images/` are generated from the real local WebApp with seeded demo finance data.
-- Runtime data, secrets, local databases, logs, virtual environments, caches, and raw screenshot captures are excluded from git.
-- The project can be presented as a Telegram finance bot, a FastAPI backend project, or a full-stack MVP with dashboard and automation.
+Included:
+
+- Source code for the demo bot, API, services, migrations, tests, and WebApp.
+- Placeholder `.env.example` values for reproducible setup.
+- README visuals generated from local demo screenshots.
+
+Not included:
+
+- Real bot tokens, API keys, ngrok tokens, databases, logs, exports, caches, or virtual environments.
+- Production customer data or private deployment credentials.
+- Client-specific operational workflows that would not belong in a public portfolio repo.

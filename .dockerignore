@@ -32,6 +32,7 @@ exports/
 project-local-screenshots/
 project-catalog-raw-screenshots/
 project-catalog-images/
+docs/images/
 
 tests/__pycache__/
 app/**/__pycache__/
