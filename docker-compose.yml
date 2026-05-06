@@ -1,0 +1,55 @@
+﻿services:
+  api:
+    build: .
+    command: uvicorn app.api.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./:/app
+      - app-data:/data
+      - ngrok-share:/home/ngrok/share
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    ports:
+      - "8000:8000"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  ngrok:
+    image: ngrok/ngrok:3
+    user: "0:0"
+    entrypoint: /bin/sh
+    command: >
+      -c "if [ -n \"$${NGROK_AUTHTOKEN}\" ];
+          then
+            mkdir -p /home/ngrok/share;
+            rm -f /home/ngrok/share/public_url;
+            ngrok http --log=stdout --authtoken $${NGROK_AUTHTOKEN} api:8000 > /home/ngrok/share/ngrok.log &
+            pid=$$!;
+            for i in $$(seq 1 20); do
+              if [ -f /home/ngrok/share/ngrok.log ]; then
+                url=$$(grep -m1 'url=https://' /home/ngrok/share/ngrok.log | sed -E 's/.*url=(https:[^ ]+).*/\\1/');
+                if [ -n \"$$url\" ]; then echo $$url > /home/ngrok/share/public_url; break; fi;
+              fi;
+              sleep 1;
+            done;
+            wait $$pid;
+          else
+            echo 'NGROK_AUTHTOKEN is empty - ngrok not started';
+            sleep 3600;
+          fi"
+    env_file:
+      - .env
+    depends_on:
+      - api
+    ports:
+      - "4040:4040"
+    volumes:
+      - ngrok-share:/home/ngrok/share
+
+volumes:
+  app-data:
+  ngrok-share:

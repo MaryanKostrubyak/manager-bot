@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Local runtime data
+app.db
+*.db
+*.sqlite
+*.sqlite3
+exports/
+kb.txt
+
+# Logs
+*.log
+build.log
+webapp_debug.log
+local-screenshots-uvicorn*.log
+
+# Generated/local screenshots
+project-local-screenshots/
+project-catalog-raw-screenshots/
+
+# Tooling and editor state
+.cursor/
+.playwright-mcp/
+.DS_Store
+Thumbs.db

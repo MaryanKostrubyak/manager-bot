@@ -1,0 +1,674 @@
+<!doctype html>
+<html lang="uk">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Finance Assistant Web</title>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+    <link rel="preconnect" href="https://telegram.org" crossorigin />
+    <link rel="stylesheet" href="styles.css?v=20260331b" />
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script defer src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script defer src="helpers.js?v=20260331b"></script>
+    <script defer src="auth.js?v=20260331b"></script>
+  </head>
+  <body class="theme-dark">
+    <div class="page">
+      <header class="dashboard-header">
+        <div class="user-info">
+          <button id="user-avatar" class="user-avatar" type="button" aria-label="User avatar">MB</button>
+          <div>
+            <p class="eyebrow muted" data-i18n="header_subtitle">Finance Assistant</p>
+            <h2 id="user-name">Welcome!</h2>
+          </div>
+        </div>
+        <div class="header-actions">
+          <button
+            id="settings-btn"
+            class="icon-btn"
+            type="button"
+            aria-label="Settings"
+            data-i18n-aria-label="settings_title"
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path
+                fill="currentColor"
+                d="M12 9.5a2.5 2.5 0 1 0 0 5a2.5 2.5 0 0 0 0-5Zm9.5 2.5a.9.9 0 0 0-.44-.77l-1.72-.99c.03-.22.06-.45.06-.68s-.03-.46-.06-.68l1.72-.99a.9.9 0 0 0 .44-.77a9 9 0 0 0-1.85-4.46a.9.9 0 0 0-1.09-.27l-1.71.99c-.36-.3-.74-.55-1.16-.75V1a.9.9 0 0 0-.7-.87A9 9 0 0 0 12 0a9 9 0 0 0-2.9.13a.9.9 0 0 0-.7.87v1.98c-.42.2-.8.45-1.16.75L5.53 2.74a.9.9 0 0 0-1.09.27A9 9 0 0 0 2.6 7.47a.9.9 0 0 0 .44.77l1.72.99c-.03.22-.06.45-.06.68s.03.46.06.68l-1.72.99a.9.9 0 0 0-.44.77a9 9 0 0 0 1.85 4.46a.9.9 0 0 0 1.09.27l1.71-.99c.36.3.74.55 1.16.75v1.98c0 .42.29.78.7.87a9 9 0 0 0 5.8 0a.9.9 0 0 0 .7-.87v-1.98c.42-.2.8-.45 1.16-.75l1.71.99a.9.9 0 0 0 1.09-.27a9 9 0 0 0 1.85-4.46ZM12 15a3 3 0 1 1 0-6a3 3 0 0 1 0 6Z"
+              />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+
+      <div class="settings-panel" id="settings-panel" hidden>
+        <div class="settings-panel__header">
+          <h3 data-i18n="settings_title">Settings</h3>
+          <button id="settings-close" class="icon-btn small" type="button" aria-label="Close" data-i18n-aria-label="settings_close">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path fill="currentColor" d="M18.3 5.7 12 12l6.3 6.3-1.4 1.4L10.6 13.4 4.3 19.7 2.9 18.3 9.2 12 2.9 5.7 4.3 4.3l6.3 6.3 6.3-6.3z" />
+            </svg>
+          </button>
+        </div>
+        <div class="settings-panel__content">
+          <label class="settings-group">
+            <span data-i18n="settings_language">Language</span>
+            <select id="language-select">
+              <option value="uk" data-i18n="language_uk">Ukrainian</option>
+              <option value="en" data-i18n="language_en">English</option>
+            </select>
+          </label>
+          <label class="settings-group">
+            <span data-i18n="settings_currency">Currency</span>
+            <select id="currency-select">
+              <option value="UAH" data-i18n="currency_uah">Hryvnia (UAH)</option>
+              <option value="USD" data-i18n="currency_usd">Dollar (USD)</option>
+            </select>
+          </label>
+          <label class="settings-group">
+            <span data-i18n="settings_theme">Theme</span>
+            <select id="theme-select">
+              <option value="dark" data-i18n="theme_dark">Dark</option>
+              <option value="light" data-i18n="theme_light">Light</option>
+            </select>
+          </label>
+          <button id="download-csv-btn" class="ghost-btn full" type="button" data-i18n="settings_download">Download CSV</button>
+        </div>
+      </div>
+      <div class="settings-overlay" id="settings-overlay" hidden></div>
+
+      <main class="content">
+        <div class="app-screen active" data-screen="overview">
+          <section class="sticky-toolbar panel" id="period-controls">
+            <div class="sticky-toolbar__top">
+              <label class="field toolbar-field">
+                <span data-i18n="hero_month_label">Month</span>
+                <select id="month-select"></select>
+              </label>
+              <button id="toolbar-more-btn" class="ghost-btn small" type="button" aria-expanded="false" data-i18n="toolbar_more">More</button>
+            </div>
+            <div class="sticky-toolbar__row sticky-toolbar__row--scroll period-buttons">
+              <button type="button" class="pill-btn active" data-period="month" data-i18n="period_month">Month</button>
+              <button type="button" class="pill-btn" data-period="7d" data-i18n="period_7d">7 days</button>
+              <button type="button" class="pill-btn" data-period="30d" data-i18n="period_30d">30 days</button>
+              <button type="button" class="pill-btn" data-period="quarter" data-i18n="period_quarter">Quarter</button>
+              <button type="button" class="pill-btn" data-period="custom" data-i18n="period_custom">Custom</button>
+            </div>
+            <div id="toolbar-more-panel" class="toolbar-more-panel" hidden>
+              <div class="toolbar-more-actions">
+                <button type="button" class="pill-btn" data-more-action="open-custom" data-i18n="toolbar_custom_range">Custom range</button>
+                <button type="button" class="pill-btn" data-more-action="open-categories" data-i18n="toolbar_categories">Categories</button>
+                <button type="button" class="pill-btn" data-more-action="open-tags" data-i18n="toolbar_tags">Tags</button>
+              </div>
+            </div>
+            <div class="period-custom" id="period-custom" hidden>
+              <div class="period-presets">
+                <button type="button" class="pill-btn" data-custom-preset="this_month" data-i18n="period_preset_this_month">This month</button>
+                <button type="button" class="pill-btn" data-custom-preset="prev_month" data-i18n="period_preset_prev_month">Previous month</button>
+                <button type="button" class="pill-btn" data-custom-preset="last_90d" data-i18n="period_preset_last_90d">Last 90 days</button>
+              </div>
+              <div class="period-custom__dates">
+                <label class="field small">
+                  <span data-i18n="period_from">From</span>
+                  <input type="date" id="period-start" />
+                </label>
+                <label class="field small">
+                  <span data-i18n="period_to">To</span>
+                  <input type="date" id="period-end" />
+                </label>
+              </div>
+              <button id="period-apply" class="ghost-btn small period-apply-btn" type="button" data-i18n="period_apply">Apply</button>
+            </div>
+            <p id="last-updated" class="last-updated muted" aria-live="polite"></p>
+          </section>
+
+          <section class="hero">
+            <div class="hero-copy">
+              <p class="eyebrow" data-i18n="hero_tagline">Digital assistant</p>
+              <h1 data-i18n="hero_title">Keep your budget under control</h1>
+              <p id="user-greeting" class="muted" data-i18n="greeting_no_init">Sign in through Telegram...</p>
+              <div class="chip-list">
+                <span class="chip" data-i18n="hero_chip_ai">AI analytics</span>
+                <span class="chip" data-i18n="hero_chip_scan">Receipt scanner</span>
+                <span class="chip" data-i18n="hero_chip_limits">Smart limits</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="grid stats-grid" id="summary-cards">
+            <article class="card">
+              <p class="muted" data-i18n="summary_income">Income</p>
+              <h2 id="summary-income">0</h2>
+            </article>
+            <article class="card">
+              <p class="muted" data-i18n="summary_expense">Expenses</p>
+              <h2 id="summary-expense">0</h2>
+            </article>
+            <article class="card">
+              <p class="muted" data-i18n="summary_balance">Balance</p>
+              <h2 id="summary-net">0</h2>
+            </article>
+            <article class="card alltime-card" hidden>
+              <div class="card-header-row">
+                <p class="muted" data-i18n="summary_all_time_expense">All-time expenses</p>
+                <button id="alltime-toggle" class="icon-btn small" type="button" data-i18n-aria-label="summary_all_time_toggle" aria-label="Toggle all-time totals">
+                  <svg class="icon-eye-on" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="M1.5 12s3.9-6.5 10.5-6.5S22.5 12 22.5 12s-3.9 6.5-10.5 6.5S1.5 12 1.5 12Zm10.5 3.5a3.5 3.5 0 1 0 0-7a3.5 3.5 0 0 0 0 7Z" />
+                  </svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" aria-hidden="true" focusable="false" hidden>
+                    <path fill="currentColor" d="m3 4.4 16.6 16.6 1.4-1.4L4.4 3zM12 5.5C5.4 5.5 1.5 12 1.5 12s1.1 1.8 3 3.5l1.5-1.5A6.2 6.2 0 0 1 5.2 12a6.8 6.8 0 0 1 2.1-4.8l1.4 1.4a4.7 4.7 0 0 0 6.7 6.7l1.6 1.6c-1.5.9-3.2 1.6-5 1.6-6.6 0-10.5-6.5-10.5-6.5s1.2-2.1 3.4-4l1.6 1.6A6.8 6.8 0 0 1 12 5.5Zm7.2 2.5-1.5 1.5A6.7 6.7 0 0 1 18.8 12c0 .9-.2 1.7-.5 2.5l-1.6-1.6c.1-.3.1-.6.1-.9a4.7 4.7 0 0 0-6.4-4.4L8.8 6a9.8 9.8 0 0 1 3.2-.5c6.6 0 10.5 6.5 10.5 6.5s-1.1 2.1-3.3 4z" />
+                  </svg>
+                </button>
+              </div>
+              <h2 id="summary-alltime-expense">0</h2>
+            </article>
+            <article class="card alltime-card" hidden>
+              <p class="muted" data-i18n="summary_all_time_income">All-time income</p>
+              <h2 id="summary-alltime-income">0</h2>
+            </article>
+          </section>
+
+                    <section class="panel chart-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="chart_eyebrow">Analytics</p>
+                <h3 data-i18n="chart_title">Spending structure &amp; trends</h3>
+              </div>
+              <div class="chart-controls" id="chart-type-nav">
+                <button type="button" class="pill-btn active" data-chart="category_bar" data-i18n="chart_tab_categories">Categories</button>
+                <button type="button" class="pill-btn" data-chart="category_pie" data-i18n="chart_tab_structure">Structure</button>
+                <button type="button" class="pill-btn" data-chart="trend_line" data-i18n="chart_tab_trend">Trend</button>
+              </div>
+            </div>
+            <div class="chart-helper">
+              <p class="muted" data-i18n="chart_helper">Pick a data source first, then a chart tab: Categories, Structure or Trend.</p>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="analytics-chart" role="img" aria-label="Financial analytics"></canvas>
+              <p id="chart-empty" class="muted"></p>
+            </div>
+            <div id="chart-metrics" class="chart-metrics"></div>
+          </section>
+
+        </div>
+        <div class="app-screen" data-screen="actions">
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="section_transactions_eyebrow">Quick entry</p>
+                <h3 data-i18n="section_transactions_title">New transaction</h3>
+              </div>
+              <p class="muted" data-i18n="section_transactions_desc">Fill in the form and we will sync the data to the bot automatically.</p>
+            </div>
+            <form id="transaction-form" class="form-grid">
+              <label>
+                <span class="label-text" data-i18n="transactions_amount_label">Amount</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  name="amount"
+                  placeholder="E.g. 250.50"
+                  data-i18n-placeholder="transactions_amount_placeholder"
+                  required
+                />
+              </label>
+              <label>
+                <span class="label-text" data-i18n="transactions_type_label">Type</span>
+                <select name="direction">
+                  <option value="expense" data-i18n="transactions_type_expense">Expense</option>
+                  <option value="income" data-i18n="transactions_type_income">Income</option>
+                </select>
+              </label>
+              <label>
+                <span class="label-text" data-i18n="transactions_category_label">Category</span>
+                <select name="category_id" id="category-select" disabled>
+                  <option value="" disabled selected data-i18n="transactions_category_placeholder">Loading...</option>
+                </select>
+                <span id="category-loading-indicator" class="field-indicator muted" data-i18n="category_loading">Loading categories...</span>
+              </label>
+              <label>
+                <span class="label-text" data-i18n="transactions_date_label">Date</span>
+                <input type="date" name="occurred_at" />
+              </label>
+              <label class="full">
+                <span class="label-text" data-i18n="transactions_description_label">Description</span>
+                <input
+                  type="text"
+                  name="description"
+                  placeholder="E.g. coffee shop, rent, gift..."
+                  data-i18n-placeholder="transactions_description_placeholder"
+                />
+              </label>
+              <button type="submit" class="primary-btn full" data-i18n="transactions_submit">Save</button>
+            </form>
+            <p id="transaction-submit-state" class="field-indicator muted" role="status" hidden></p>
+            <p id="transaction-feedback" class="muted feedback"></p>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="receipt_eyebrow">Receipts</p>
+                <h3 data-i18n="receipt_title">Auto-fill</h3>
+              </div>
+              <p class="muted" data-i18n="receipt_desc">AI extracts the total, merchant and suggests a category.</p>
+            </div>
+            <p class="field-indicator muted" data-i18n="receipt_hint">JPG / PNG / HEIC up to 5 MB.</p>
+            <input type="file" id="receipt-input" accept="image/*" class="file-input" />
+            <div id="receipt-preview" class="receipt-preview" hidden></div>
+            <div id="receipt-result" class="receipt-result"></div>
+          </section>
+
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="statement_eyebrow">Statement</p>
+                <h3 data-i18n="statement_title">Bank statement</h3>
+              </div>
+              <p class="muted" data-i18n="statement_desc">Upload CSV or XLSX — we will detect columns and import into the bot.</p>
+            </div>
+            <p class="field-indicator muted" data-i18n="statement_hint">CSV / XLSX up to 10 MB.</p>
+            <input type="file" id="statement-input" accept=".csv,.xls,.xlsx" class="file-input" />
+            <div id="statement-result" class="receipt-result"></div>
+          </section>
+        </div>
+
+        <div class="app-screen" data-screen="goals">
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="goals_eyebrow">Goals</p>
+                <h3 data-i18n="limits_title">Category limits</h3>
+              </div>
+              <p class="muted" data-i18n="limits_desc">Control category spending and receive alerts.</p>
+            </div>
+            <div class="budget-scenarios">
+              <div class="budget-scenarios__header">
+                <div>
+                  <p class="eyebrow" data-i18n="scenario_eyebrow">Scenarios</p>
+                  <h4 data-i18n="scenario_title">Budget scenarios</h4>
+                </div>
+                <div class="budget-scenarios__actions" id="scenario-actions">
+                  <button type="button" class="pill-btn active" data-scenario="normal" data-i18n="scenario_normal">Normal</button>
+                  <button type="button" class="pill-btn" data-scenario="economy" data-i18n="scenario_economy">Economy</button>
+                  <button type="button" class="pill-btn" data-scenario="vacation" data-i18n="scenario_vacation">Vacation</button>
+                </div>
+              </div>
+              <p id="scenario-feedback" class="muted"></p>
+              <div id="scenario-recommendations" class="scenario-recommendations"></div>
+            </div>
+            <form id="goal-form" class="form-grid">
+              <label>
+                <span class="label-text" data-i18n="transactions_category_label">Category</span>
+                <select id="goal-category" name="goal_category_id" required></select>
+              </label>
+              <label>
+                <span class="label-text" data-i18n="goals_amount_label">Amount</span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  name="goal_amount"
+                  placeholder="3000"
+                  data-i18n-placeholder="goals_amount_placeholder"
+                  required
+                />
+              </label>
+              <label>
+                <span class="label-text" data-i18n="goals_period_label">Period</span>
+                <select name="goal_period" required>
+                  <option value="monthly" data-i18n="goals_period_monthly" selected>Month</option>
+                  <option value="weekly" data-i18n="goals_period_weekly">Week</option>
+                  <option value="daily" data-i18n="goals_period_daily">Day</option>
+                </select>
+              </label>
+              <label>
+                <span class="label-text" data-i18n="goals_threshold_label">Alert threshold</span>
+                <div class="slider-field">
+                  <input
+                    type="range"
+                    id="goal-threshold"
+                    name="goal_threshold"
+                    min="0.5"
+                    max="1"
+                    step="0.05"
+                    value="0.9"
+                  />
+                  <span id="goal-threshold-value">90%</span>
+                </div>
+              </label>
+              <button type="submit" class="primary-btn full" data-i18n="goals_button">Add goal</button>
+            </form>
+            <p id="goal-feedback" class="muted feedback"></p>
+            <div id="budgets"></div>
+          </section>
+          <section class="panel savings-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="savings_eyebrow">Savings</p>
+                <h3 data-i18n="savings_title">Savings goals</h3>
+              </div>
+              <p class="muted" data-i18n="savings_desc">Add multiple goals and track progress separately.</p>
+            </div>
+            <form id="savings-form" class="form-grid">
+              <label>
+                <span class="label-text" data-i18n="savings_name_label">Goal name</span>
+                <input type="text" name="savings_name" placeholder="Trip" data-i18n-placeholder="savings_name_placeholder" />
+              </label>
+              <label>
+                <span class="label-text" data-i18n="savings_target_label">Target amount</span>
+                <input type="number" step="0.01" min="0" name="savings_target" placeholder="20000" />
+              </label>
+              <label>
+                <span class="label-text" data-i18n="savings_current_label">Saved so far</span>
+                <input type="number" step="0.01" min="0" name="savings_current" placeholder="4500" />
+              </label>
+              <label>
+                <span class="label-text" data-i18n="savings_monthly_label">Monthly plan</span>
+                <input type="number" step="0.01" min="0" name="savings_monthly" placeholder="2500" />
+              </label>
+              <button type="submit" class="primary-btn full" data-i18n="savings_button">Add goal</button>
+            </form>
+            <p id="savings-feedback" class="muted feedback"></p>
+            <div id="savings-goals" class="savings-goals"></div>
+          </section>
+
+          <section class="panel emotion-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="emotion_eyebrow">Emotion</p>
+                <h3 data-i18n="emotion_title">Category emotion tags</h3>
+              </div>
+              <p class="muted" data-i18n="emotion_desc">Label categories to balance usefulness and joy.</p>
+            </div>
+            <div id="emotion-list" class="emotion-list"></div>
+            <p id="emotion-feedback" class="muted feedback"></p>
+          </section>
+        </div>
+
+        <div class="app-screen" data-screen="history">
+          <section class="history-calendar-shell">
+            <div id="history-calendar" class="history-calendar">
+              <div class="history-calendar__header">
+                <button
+                  id="history-calendar-prev"
+                  class="icon-btn history-calendar__nav"
+                  type="button"
+                  data-i18n-aria-label="history_calendar_prev"
+                  aria-label="Previous month"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="m15.7 5.3-6.7 6.7 6.7 6.7-1.4 1.4L6.2 12l8.1-8.1z" />
+                  </svg>
+                </button>
+                <p id="history-calendar-month-label" class="history-calendar__month"></p>
+                <button
+                  id="history-calendar-next"
+                  class="icon-btn history-calendar__nav"
+                  type="button"
+                  data-i18n-aria-label="history_calendar_next"
+                  aria-label="Next month"
+                >
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path fill="currentColor" d="m8.3 18.7 6.7-6.7-6.7-6.7 1.4-1.4 8.1 8.1-8.1 8.1z" />
+                  </svg>
+                </button>
+              </div>
+              <div
+                id="history-calendar-days"
+                class="history-calendar__days"
+                role="listbox"
+                data-i18n-aria-label="history_calendar_day_picker"
+                aria-label="History day picker"
+              ></div>
+              <div class="history-calendar__footer">
+                <button id="history-calendar-month" class="ghost-btn history-calendar__mode" type="button" data-i18n="history_calendar_month">Whole month</button>
+                <button id="history-calendar-today" class="ghost-btn history-calendar__mode history-calendar__today" type="button" data-i18n="history_calendar_today">Today</button>
+              </div>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="history_eyebrow">History</p>
+                <h3 data-i18n="history_title">Latest transactions</h3>
+              </div>
+              <p class="muted" data-i18n="history_desc">Monthly filters are applied automatically.</p>
+            </div>
+            <div class="history-toolbar">
+              <div class="history-toolbar__top">
+                <label class="field history-search-field">
+                  <span data-i18n="history_search_label">Search</span>
+                  <input
+                    id="history-search"
+                    type="search"
+                    placeholder="Amount, description or merchant"
+                    data-i18n-placeholder="history_search_placeholder"
+                  />
+                </label>
+                <button
+                  id="history-filters-toggle"
+                  class="ghost-btn small history-filters-toggle"
+                  type="button"
+                  aria-expanded="true"
+                >
+                  <span data-i18n="history_filters_button">Filters</span>
+                  <span id="history-filters-count" class="history-filters-count" hidden>0</span>
+                </button>
+              </div>
+
+              <div class="history-quick-pills">
+                <div class="history-segment" role="group" aria-label="Type">
+                  <button type="button" class="history-segment__btn active" data-history-direction="all" data-i18n="history_filter_all_types">All types</button>
+                  <button type="button" class="history-segment__btn" data-history-direction="expense" data-i18n="transactions_type_expense">Expense</button>
+                  <button type="button" class="history-segment__btn" data-history-direction="income" data-i18n="transactions_type_income">Income</button>
+                </div>
+              </div>
+
+              <div id="history-filters-panel" class="history-filters-panel">
+                <div class="history-filters">
+                  <label class="field small history-hidden-select">
+                    <span data-i18n="history_filter_type">Type</span>
+                    <select id="history-filter-direction">
+                      <option value="all" data-i18n="history_filter_all_types">All types</option>
+                      <option value="expense" data-i18n="transactions_type_expense">Expense</option>
+                      <option value="income" data-i18n="transactions_type_income">Income</option>
+                    </select>
+                  </label>
+                  <label class="field small history-filter-full">
+                    <span data-i18n="history_filter_category">Category</span>
+                    <select id="history-filter-category">
+                      <option value="all" data-i18n="history_filter_all_categories">All categories</option>
+                    </select>
+                  </label>
+                  <label class="field small">
+                    <span data-i18n="history_filter_amount_min">Min amount</span>
+                    <input id="history-filter-amount-min" type="number" min="0" step="0.01" />
+                  </label>
+                  <label class="field small">
+                    <span data-i18n="history_filter_amount_max">Max amount</span>
+                    <input id="history-filter-amount-max" type="number" min="0" step="0.01" />
+                  </label>
+                  <label class="field small">
+                    <span data-i18n="history_filter_emotion">Emotion tag</span>
+                    <select id="history-filter-emotion">
+                      <option value="all" data-i18n="history_emotion_all">All</option>
+                      <option value="none" data-i18n="history_emotion_none">No tag</option>
+                      <option value="joy" data-i18n="emotion_option_joy">Joy</option>
+                      <option value="useful" data-i18n="emotion_option_useful">Useful</option>
+                      <option value="neutral" data-i18n="emotion_option_neutral">Neutral</option>
+                      <option value="stress" data-i18n="emotion_option_stress">Stress</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="history-filters-actions">
+                  <button id="history-filters-reset" class="ghost-btn small" type="button" data-i18n="history_filter_reset">Reset filters</button>
+                </div>
+              </div>
+              <div id="history-active-filters" class="history-active-filters" hidden></div>
+            </div>
+            <div id="transactions-container" class="transactions-grid"></div>
+            <button id="load-more-btn" class="ghost-btn full" type="button" data-i18n="transactions_more">Show more</button>
+          </section>
+        </div>
+
+        <div class="app-screen chat-screen" data-screen="ai">
+          <section class="assistant-panel">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow" data-i18n="ai_eyebrow">AI assistant</p>
+                <h3 data-i18n="ai_title">Get a suggestion</h3>
+              </div>
+              <p class="muted" data-i18n="ai_desc">Ask about your budget, trends or planning ideas.</p>
+            </div>
+            <div class="assistant-shell">
+              <div class="assistant-tools">
+                <div class="assistant-chips" id="assistant-chips">
+                  <button type="button" class="assistant-chip" data-prompt-key="assistant_chip_prompt_summary" data-i18n="assistant_chip_summary">Summarize month</button>
+                  <button type="button" class="assistant-chip" data-prompt-key="assistant_chip_prompt_save" data-i18n="assistant_chip_save">Where can I save</button>
+                  <button type="button" class="assistant-chip" data-prompt-key="assistant_chip_prompt_compare" data-i18n="assistant_chip_compare">Compare categories</button>
+                </div>
+                <label class="assistant-tone">
+                  <span class="muted" data-i18n="assistant_tone_label">Tone</span>
+                  <select id="assistant-tone">
+                    <option value="short" data-i18n="assistant_tone_short">Short</option>
+                    <option value="detailed" data-i18n="assistant_tone_detailed">Detailed</option>
+                    <option value="numbers" data-i18n="assistant_tone_numbers">Numbers only</option>
+                  </select>
+                </label>
+              </div>
+              <div id="assistant-history" class="assistant-history chat-messages" role="log" aria-live="polite" aria-relevant="additions text">
+                <p class="muted placeholder" data-i18n="assistant_history_placeholder">Your answer history will appear here.</p>
+              </div>
+              <form id="assistant-form" class="assistant-form form-stack chat-composer">
+                <textarea
+                  name="question"
+                  rows="3"
+                  placeholder="Type a question for the AI…" data-i18n-placeholder="ai_placeholder"
+                ></textarea>
+                <button type="submit" class="primary-btn chat-send-btn" data-i18n-aria-label="ai_button" aria-label="Ask">
+                  <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                    <path
+                      fill="currentColor"
+                      d="M3.4 11.25 18.9 3.7c1.15-.56 2.4.64 1.82 1.79l-7.54 15.5c-.57 1.18-2.3 1-2.61-.27l-1.12-4.64a1.2 1.2 0 0 0-.88-.88l-4.64-1.12c-1.27-.3-1.45-2.04-.27-2.61Zm2.95.92 2.93.7a2.8 2.8 0 0 1 2.06 2.06l.7 2.93 5.78-11.87Z"
+                    />
+                  </svg>
+                  <span class="sr-only" data-i18n="ai_button">Ask</span>
+                </button>
+              </form>
+            </div>
+            <p id="assistant-feedback" class="field-indicator error" role="status" hidden></p>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <div class="modal" id="history-edit-modal" hidden>
+      <div class="modal__overlay" data-history-edit-close></div>
+      <div class="modal__panel">
+        <div class="modal__header">
+          <h4 data-i18n="history_edit_title">Edit transaction</h4>
+          <button class="icon-btn small" type="button" data-history-edit-close aria-label="Close">&times;</button>
+        </div>
+        <form id="history-edit-form" class="form-grid">
+          <input type="hidden" name="transaction_id" />
+          <label>
+            <span class="label-text" data-i18n="transactions_amount_label">Amount</span>
+            <input type="number" step="0.01" name="amount" required />
+          </label>
+          <label>
+            <span class="label-text" data-i18n="transactions_type_label">Type</span>
+            <select name="direction">
+              <option value="expense" data-i18n="transactions_type_expense">Expense</option>
+              <option value="income" data-i18n="transactions_type_income">Income</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text" data-i18n="transactions_category_label">Category</span>
+            <select name="category_id" id="history-edit-category">
+              <option value="" data-i18n="history_filter_all_categories">All categories</option>
+            </select>
+          </label>
+          <label>
+            <span class="label-text" data-i18n="transactions_date_label">Date</span>
+            <input type="date" name="occurred_at" />
+          </label>
+          <label class="full">
+            <span class="label-text" data-i18n="transactions_description_label">Description</span>
+            <input type="text" name="description" />
+          </label>
+          <div class="history-edit-actions full">
+            <button id="history-edit-cancel" class="ghost-btn" type="button" data-i18n="history_edit_cancel">Cancel</button>
+            <button class="primary-btn" type="submit" data-i18n="history_edit_save">Save changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <nav class="bottom-nav" id="bottom-nav">
+      <button type="button" class="bottom-nav-btn active" data-screen-target="overview">
+        <span class="nav-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M12 3.2L3 10h2v9h5v-6h4v6h5v-9h2z" />
+          </svg>
+        </span>
+        <span class="nav-label" data-i18n="nav_overview">Overview</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" data-screen-target="actions">
+        <span class="nav-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path fill="currentColor" d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z" />
+          </svg>
+        </span>
+        <span class="nav-label" data-i18n="nav_actions">Operations</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" data-screen-target="goals">
+        <span class="nav-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M12 2a10 10 0 1 0 10 10A10.011 10.011 0 0 0 12 2Zm0 18a8 8 0 1 1 8-8a8.009 8.009 0 0 1-8 8Zm0-14a6 6 0 1 0 6 6a6.006 6.006 0 0 0-6-6Zm0 10a4 4 0 1 1 4-4a4.005 4.005 0 0 1-4 4Z"
+            />
+          </svg>
+        </span>
+        <span class="nav-label" data-i18n="nav_goals">Goals</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" data-screen-target="history">
+        <span class="nav-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M13 3a9 9 0 1 0 9 9h-2a7 7 0 1 1-7-7Zm-1 4v6h5v-2h-3V7Z"
+            />
+          </svg>
+        </span>
+        <span class="nav-label" data-i18n="nav_history">History</span>
+      </button>
+      <button type="button" class="bottom-nav-btn" data-screen-target="ai">
+        <span class="nav-icon" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24">
+            <path
+              fill="currentColor"
+              d="M11 2h2v3h-2Zm9 8v5a4 4 0 0 1-4 4h-8a4 4 0 0 1-4-4v-5a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4Zm-5 3a2 2 0 1 0 2 2a2 2 0 0 0-2-2Zm-6 0a2 2 0 1 0 2 2a2 2 0 0 0-2-2Z"
+            />
+          </svg>
+        </span>
+        <span class="nav-label" data-i18n="nav_ai">AI</span>
+      </button>
+    </nav>
+
+    <script defer src="app.config.js?v=20260331b"></script>
+    <script defer src="app.state.js?v=20260331b"></script>
+    <script defer src="app.core.js?v=20260331b"></script>
+    <script defer src="app.analytics.js?v=20260331b"></script>
+    <script defer src="app.transactions.js?v=20260331b"></script>
+    <script defer src="app.js?v=20260331b"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
