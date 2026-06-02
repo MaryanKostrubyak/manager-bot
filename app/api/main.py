@@ -11,6 +11,7 @@ from fastapi.staticfiles import StaticFiles
 from loguru import logger
 from telegram import BotCommand
 from telegram.error import InvalidToken
+from telegram.ext import Application
 
 from app.api.routes import analytics, budgets, health, telegram, webapp
 from app.core.config import get_settings
@@ -21,10 +22,23 @@ from app.utils.ngrok import fetch_ngrok_public_url
 
 settings = get_settings()
 configure_logging(settings)
-telegram_bot = TelegramBot(settings)
-telegram_application = telegram_bot.build_application()
 scheduler = AsyncIOScheduler(timezone=settings.scheduler_tz)
-reminder_manager = ReminderManager(scheduler, telegram_application)
+
+
+def _build_telegram_runtime() -> tuple[TelegramBot | None, Application | None, ReminderManager | None]:
+    if not settings.telegram_bot_token:
+        logger.warning("Telegram bot disabled: TELEGRAM_BOT_TOKEN is empty.")
+        return None, None, None
+
+    try:
+        telegram_bot = TelegramBot(settings)
+        telegram_application = telegram_bot.build_application()
+    except InvalidToken as exc:
+        logger.error("Telegram bot disabled: {}", exc)
+        return None, None, None
+
+    reminder_manager = ReminderManager(scheduler, telegram_application)
+    return telegram_bot, telegram_application, reminder_manager
 
 
 async def _resolve_webhook_base_url() -> str | None:
@@ -45,9 +59,16 @@ async def _resolve_webhook_base_url() -> str | None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     app.state.tg_application = None
+    app.state.webhook_base_url = None
     reminder_started = False
     bot_started = False
     polling_task: asyncio.Task | None = None
+
+    telegram_bot, telegram_application, reminder_manager = _build_telegram_runtime()
+
+    if not telegram_bot or not telegram_application or not reminder_manager:
+        yield
+        return
 
     try:
         await telegram_application.initialize()
@@ -119,9 +140,6 @@ async def lifespan(app: FastAPI):
         reminder_started = True
         app.state.tg_application = telegram_application
 
-        yield
-    except InvalidToken as exc:
-        logger.error("Telegram bot disabled: {}", exc)
         yield
     finally:
         if bot_started:
