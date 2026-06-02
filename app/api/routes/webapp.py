@@ -6,11 +6,11 @@ from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal
 from typing import Any
+from zoneinfo import ZoneInfo
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, status
-from sqlalchemy import func, select, or_
+from sqlalchemy import func, or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
-from zoneinfo import ZoneInfo
 
 from app.api.deps import get_db_session, get_settings_dep
 from app.core.config import Settings, get_settings
@@ -19,18 +19,18 @@ from app.schemas import (
     BudgetLimitCreate,
     BudgetProgress,
     TransactionCreate,
-    WebAssistantRequest,
-    WebAssistantResponse,
     WebAssistantFeedbackRequest,
     WebAssistantFeedbackResponse,
+    WebAssistantRequest,
+    WebAssistantResponse,
+    WebCategory,
     WebChartResponse,
     WebChartSeries,
-    WebCategory,
     WebConfigResponse,
     WebInsightsResponse,
+    WebOverviewResponse,
     WebPreferencesResponse,
     WebPreferencesUpdate,
-    WebOverviewResponse,
     WebReceiptRequest,
     WebReceiptResponse,
     WebSessionRequest,
@@ -48,17 +48,20 @@ from app.services.statement_import import StatementImportService
 from app.services.transactions import TransactionService
 from app.services.users import UserService
 from app.utils.categories import localize_category_name
+from app.utils.merchants import canonicalize_merchant
+from app.utils.subscriptions import is_subscription
 from app.utils.telegram_webapp import (
     InvalidInitDataError,
     InvalidTelegramLoginError,
     parse_telegram_login_data,
     parse_webapp_init_data,
 )
-from app.utils.web_session import InvalidWebSessionToken, create_web_session_token, verify_web_session_token
 from app.utils.text import repair_text
-from app.utils.merchants import canonicalize_merchant
-from app.utils.subscriptions import is_subscription
-
+from app.utils.web_session import (
+    InvalidWebSessionToken,
+    create_web_session_token,
+    verify_web_session_token,
+)
 
 CACHE_TTL_SECONDS = 60
 _ANALYTICS_CACHE: dict[str, tuple[float, Any]] = {}

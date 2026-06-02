@@ -1,9 +1,9 @@
 ﻿from app.models.finance import (
+    AssistantFeedback,
     BudgetLimit,
     BudgetPeriod,
     Category,
     CategoryType,
-    AssistantFeedback,
     ReportSnapshot,
     Transaction,
     TransactionType,

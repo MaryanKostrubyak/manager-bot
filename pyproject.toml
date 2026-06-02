@@ -49,10 +49,24 @@ addopts = "-q"
 line-length = 100
 
 [tool.ruff.lint]
-select = ["E", "F", "I", "B", "UP", "ASYNC", "ANN"]
+select = ["E9", "F", "I"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["app"]
 
 [tool.hatch.build.targets.sdist]
-include = ["app", "migrations", "README.md", "pyproject.toml", "alembic.ini", "docker-compose.yml", "Dockerfile"]
+include = [
+    "app",
+    "migrations",
+    "webapp",
+    ".env.example",
+    "README.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "LICENSE",
+    "pyproject.toml",
+    "alembic.ini",
+    "docker-compose.yml",
+    "Dockerfile",
+]

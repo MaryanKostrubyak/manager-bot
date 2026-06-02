@@ -1,10 +1,10 @@
 ﻿from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import httpx
 from loguru import logger
-from pathlib import Path
 
 from app.core.config import Settings
 

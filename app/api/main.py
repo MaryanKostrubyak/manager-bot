@@ -1,7 +1,7 @@
 ﻿from __future__ import annotations
 
-from contextlib import asynccontextmanager, suppress
 import asyncio
+from contextlib import asynccontextmanager, suppress
 from datetime import datetime, timezone
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler

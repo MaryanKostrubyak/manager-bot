@@ -1,64 +1,46 @@
 ﻿from __future__ import annotations
 
-
-
-
-
 from collections import defaultdict
-
 from contextlib import asynccontextmanager
-
 from datetime import date, datetime, timedelta, timezone
-
 from decimal import Decimal, InvalidOperation
-
 from io import BytesIO
-
 from zoneinfo import ZoneInfo
 
-
-
 from loguru import logger
-
 from sqlalchemy import func, select
-
-from telegram import InputFile, InlineKeyboardButton, InlineKeyboardMarkup, Update, WebAppInfo
-
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, InputFile, Update, WebAppInfo
 from telegram.error import TelegramError
-
-from telegram.ext import Application, CallbackQueryHandler, CommandHandler, ContextTypes, MessageHandler, filters
-
-
+from telegram.ext import (
+    Application,
+    CallbackQueryHandler,
+    CommandHandler,
+    ContextTypes,
+    MessageHandler,
+    filters,
+)
 
 from app.core.config import Settings
-
 from app.db.session import AsyncSessionLocal
-
 from app.models import BudgetPeriod, Category, CategoryType, Transaction, TransactionType, User
-
 from app.schemas import AnalyticsSummary, BudgetLimitCreate, TransactionCreate
-
 from app.services.assistant import AIAdvisor
 from app.services.budgets import BudgetService
-
 from app.services.receipt_ai import GPTReceiptParser
-
 from app.services.reports import ReportService
-
 from app.services.transactions import TransactionService
-
 from app.services.users import UserService
 from app.utils.categories import localize_category_name
-from app.utils.text import repair_text
 from app.utils.subscriptions import is_subscription
+from app.utils.text import repair_text
 
 """Telegram bot entrypoint: handlers wiring and business services for finance assistant."""
 
 from app.telegram.keyboards import (
     budget_menu_keyboard,
     budget_period_keyboard,
-    chart_type_keyboard,
     category_keyboard,
+    chart_type_keyboard,
     entry_date_keyboard,
     main_menu_keyboard,
     quick_confirm_keyboard,
@@ -66,9 +48,6 @@ from app.telegram.keyboards import (
     settings_keyboard,
     timezone_keyboard,
 )
-
-
-
 
 TIMEZONE_STATE_KEY = "awaiting_timezone"
 CAPTURE_STATE_KEY = "capture"

@@ -5,7 +5,6 @@ from datetime import date
 
 from app.utils.merchants import canonicalize_merchant
 
-
 SUBSCRIPTION_CATEGORY_HINTS = (
     "підписк",
     "subscription",

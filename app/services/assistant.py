@@ -6,8 +6,7 @@ from zoneinfo import ZoneInfo
 from loguru import logger
 
 try:
-    from openai import AsyncOpenAI
-    from openai import OpenAIError
+    from openai import AsyncOpenAI, OpenAIError
 except Exception:  # pragma: no cover - optional dependency
     AsyncOpenAI = None
     OpenAIError = Exception

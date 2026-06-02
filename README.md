@@ -5,10 +5,11 @@
 </p>
 
 <p align="center">
-  <strong>Portfolio demo repository</strong> for a Telegram finance assistant with a FastAPI backend and responsive WebApp dashboard.
+  <strong>Public portfolio/demo repository</strong> for a Telegram finance assistant with a FastAPI backend and responsive WebApp dashboard.
 </p>
 
 <p align="center">
+  <img alt="CI" src="https://img.shields.io/github/actions/workflow/status/MaryanKostrubyak/manager-bot/ci.yml?branch=main&style=flat-square&label=CI" />
   <img alt="Python" src="https://img.shields.io/badge/Python-3.11+-3776AB?style=flat-square&logo=python&logoColor=white" />
   <img alt="FastAPI" src="https://img.shields.io/badge/FastAPI-API-009688?style=flat-square&logo=fastapi&logoColor=white" />
   <img alt="Telegram" src="https://img.shields.io/badge/Telegram-Bot_+_WebApp-26A5E4?style=flat-square&logo=telegram&logoColor=white" />
@@ -16,17 +17,17 @@
   <img alt="Docker" src="https://img.shields.io/badge/Docker-ready-2496ED?style=flat-square&logo=docker&logoColor=white" />
 </p>
 
-## Demo Positioning
+## Release Positioning
 
-This repository is intentionally shaped as a public portfolio/demo project. It shows the architecture, UX, API design, data modeling, and delivery quality behind a finance assistant MVP.
+`manager-bot` is intentionally published as a portfolio/demo release, not as a hosted SaaS and not as a dump of private client code.
 
-It is not a dump of private client production code. The public version uses demo-friendly configuration, seeded/local screenshots, placeholder environment values, and excludes real secrets, production data, deployment credentials, and client-specific business rules.
+This repository is designed to show:
 
-Good GitHub topics for this repository:
-
-```text
-portfolio, demo-project, telegram-bot, fastapi, finance-dashboard, webapp, sqlalchemy, docker
-```
+- Telegram bot flow design.
+- FastAPI backend structure and service boundaries.
+- Async SQLAlchemy models plus Alembic migrations.
+- A responsive Telegram WebApp dashboard.
+- Demo-safe delivery practices: Docker, tests, CI, release notes, and repository hygiene.
 
 ## Screenshots
 
@@ -42,107 +43,101 @@ portfolio, demo-project, telegram-bot, fastapi, finance-dashboard, webapp, sqlal
   <img src="docs/images/readme-demo-scope.png" alt="Portfolio demo scope and product flow" width="1000" />
 </p>
 
-## What It Demonstrates
-
-- Telegram bot flows: onboarding, command handlers, inline menus, category actions, transaction parsing, and webhook processing.
-- FastAPI backend: versioned REST routes, dependency wiring, healthcheck, analytics, budgets, exports, and Telegram integration endpoints.
-- Data layer: async SQLAlchemy models, Alembic migrations, SQLite for local development, and Docker-ready PostgreSQL-style configuration.
-- WebApp dashboard: responsive Telegram WebApp UI with KPI cards, charts, filters, budgets, savings goals, transaction history, settings, and assistant view.
-- Import/export workflows: CSV/XLSX statement import, CSV exports, and receipt/assistant service boundaries.
-- Delivery practices: Docker setup, environment-based settings, logging, migrations, tests, and clean repository hygiene.
-
 ## Feature Map
 
 | Area | Demo capability |
 | --- | --- |
-| Bot | `/start`, quick actions, transaction parsing, reports, export entry points |
-| API | Analytics, budgets, WebApp data, Telegram webhook, healthcheck |
-| WebApp | Overview, operations, goals, history, AI assistant, settings |
+| Bot | `/start`, quick actions, transaction parsing, reports, exports, mini app entry points |
+| API | Healthcheck, Telegram webhook, analytics, budgets, WebApp endpoints |
+| WebApp | KPI cards, charts, filters, quick transaction entry, assistant, settings |
 | Data | Transactions, categories, budgets, user preferences, assistant feedback |
-| Automation | Budget monitoring and reminder service structure |
-| AI-ready services | Receipt extraction and assistant wrappers with optional OpenAI configuration |
+| Automation | Budget reminder service structure |
+| AI-ready services | Receipt parsing and assistant wrappers with optional OpenAI configuration |
 
-## Tech Stack
+## Stack
 
 | Layer | Tools |
 | --- | --- |
 | Bot | `python-telegram-bot`, Telegram Webhooks, Telegram WebApp |
 | API | FastAPI, Pydantic, Uvicorn |
-| Data | SQLAlchemy async, Alembic, SQLite/PostgreSQL-ready settings |
+| Data | SQLAlchemy async, Alembic, SQLite, PostgreSQL-ready settings |
 | Automation | APScheduler, optional Redis |
 | WebApp | HTML, CSS, vanilla JavaScript, Chart.js |
 | AI / Import | OpenAI SDK, Pandas, OpenPyXL |
-| DevOps | Docker, docker-compose, Loguru, optional Sentry |
-| Tests | Pytest, pytest-asyncio |
+| DevOps | Docker, Docker Compose, Loguru, optional Sentry |
+| Validation | Pytest, Ruff, GitHub Actions |
 
-## Project Structure
+## Repository Layout
 
 ```text
 manager-bot/
-|-- app/
-|   |-- api/          # FastAPI app, routes, dependencies
-|   |-- core/         # settings and logging
-|   |-- db/           # async database session/base
-|   |-- models/       # SQLAlchemy models
-|   |-- schemas/      # Pydantic schemas
-|   |-- services/     # business logic, imports, reports, AI helpers
-|   |-- tasks/        # scheduled reminders
-|   |-- telegram/     # bot handlers and keyboards
-|   `-- utils/        # parsing, dates, categories, web session helpers
-|-- migrations/       # Alembic migrations
-|-- tests/            # parser/date tests
-|-- webapp/           # Telegram WebApp frontend
-|-- docs/images/      # README presentation images
-|-- docker-compose.yml
+|-- app/               # FastAPI app, services, models, bot logic
+|-- migrations/        # Alembic migrations
+|-- tests/             # Local validation and smoke coverage
+|-- webapp/            # Telegram WebApp frontend
+|-- docs/images/       # README and social preview assets
+|-- .github/workflows/ # CI validation
 |-- Dockerfile
+|-- docker-compose.yml
 |-- pyproject.toml
 `-- README.md
 ```
 
 ## Quick Start
 
-Create local environment settings:
+### 1. Create a local environment file
 
-```bash
-cp .env.example .env
+PowerShell:
+
+```powershell
+Copy-Item .env.example .env
 ```
 
-Fill the values you need:
+Important:
 
-```env
-TELEGRAM_BOT_TOKEN=your-telegram-bot-token
-TELEGRAM_WEBHOOK_SECRET=your-webhook-secret
-ADMIN_API_KEY=your-admin-api-key
-OPENAI_API_KEY=your-openai-api-key
+- `.env.example` must stay placeholder-only.
+- Never commit `.env`.
+- Never paste real tokens or secrets into issues, PRs, screenshots, CI logs, or release notes.
+
+### 2. Run locally with Python
+
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -e .[dev]
+alembic upgrade head
+python -m uvicorn app.api.main:app --reload
 ```
 
-Run with Docker:
-
-```bash
-docker compose up --build
-```
-
-Useful local URLs:
+Local URLs:
 
 ```text
 API:         http://localhost:8000
 Healthcheck: http://localhost:8000/health/ping
+WebApp:      http://localhost:8000/webapp/
 ```
 
-## Local Development
+### 3. Run with Docker Compose
 
-```bash
-python -m venv .venv
-.\.venv\Scripts\activate
-pip install -e .[dev]
-alembic upgrade head
-uvicorn app.api.main:app --reload
+```powershell
+docker compose up --build
 ```
 
-Run tests:
+Notes:
 
-```bash
+- Docker Compose overrides a few container-only values internally, so `.env.example` can stay friendly for direct local runs.
+- If `NGROK_AUTHTOKEN` is empty, the `ngrok` service stays idle and the app falls back to local polling behavior.
+
+## Local Validation
+
+Run the release checks from the project environment:
+
+```powershell
+ruff check .
 pytest
+python -c "from app.api.main import app; print(app.title)"
+python -m pip wheel . --no-deps
+docker build -t manager-bot-local-check .
 ```
 
 ## API Overview
@@ -157,30 +152,53 @@ pytest
 | `GET /api/v1/budgets/{telegram_id}` | User budget limits and progress. |
 | `POST /api/v1/budgets/{telegram_id}` | Creates a budget limit for a category. |
 
-## Telegram Webhook With Ngrok
-
-For local Telegram webhook testing, fill `NGROK_AUTHTOKEN` in `.env` and keep `WEBHOOK_BASE_URL` empty. The Docker setup starts ngrok, reads the public tunnel URL from `http://localhost:4040/api/tunnels`, and registers:
-
-```text
-https://<ngrok-domain>/telegram/webhook/<secret>
-```
-
-Start the relevant services:
-
-```bash
-docker compose up --build api db redis ngrok
-```
-
-## Public Demo Boundaries
+## Demo Boundaries
 
 Included:
 
-- Source code for the demo bot, API, services, migrations, tests, and WebApp.
-- Placeholder `.env.example` values for reproducible setup.
-- README visuals generated from local demo screenshots.
+- Source code for the bot, API, services, WebApp, migrations, tests, and CI.
+- Placeholder configuration in `.env.example`.
+- Local/Docker setup for demo and portfolio review.
+- README visuals generated from demo-safe screenshots.
 
 Not included:
 
-- Real bot tokens, API keys, ngrok tokens, databases, logs, exports, caches, or virtual environments.
-- Production customer data or private deployment credentials.
-- Client-specific operational workflows that would not belong in a public portfolio repo.
+- Real bot tokens, API keys, deployment secrets, production data, or customer credentials.
+- Hosted production infrastructure.
+- Client-specific business rules that do not belong in a public portfolio repository.
+- PyPI package publishing for this release.
+
+## Non-Goals
+
+- This repository is not positioned as a turnkey production finance platform.
+- No public hosted demo URL is promised in `v0.1.0`.
+- The release does not try to clear all style/type-annotation debt; CI intentionally enforces release-safe Ruff checks only.
+
+## Suggested GitHub Metadata
+
+Repository description:
+
+```text
+Telegram finance assistant demo with FastAPI backend, Telegram WebApp dashboard, analytics, budgets, and Docker-ready local setup.
+```
+
+Topics:
+
+```text
+portfolio, demo-project, telegram-bot, fastapi, finance-dashboard, webapp, sqlalchemy, docker
+```
+
+Social preview:
+
+```text
+docs/images/readme-hero.png
+```
+
+## Release
+
+The first public portfolio release is `v0.1.0`.
+
+- Tag from `main` after CI is green.
+- Use `CHANGELOG.md` as the release notes source.
+- Do not publish to PyPI.
+- Do not attach real data exports, secrets, or local artifacts to the GitHub release.

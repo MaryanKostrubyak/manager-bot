@@ -9,14 +9,11 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends build-essential libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml ./
-COPY README.md ./README.md
+COPY . .
 
 RUN pip install --no-cache-dir --upgrade pip \
     && pip install --no-cache-dir hatchling \
     && pip install --no-cache-dir .
-
-COPY . .
 
 EXPOSE 8000
 

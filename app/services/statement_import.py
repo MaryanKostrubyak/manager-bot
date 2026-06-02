@@ -26,9 +26,9 @@ from app.models import Category, CategoryType, Transaction, TransactionType, Use
 from app.schemas import TransactionCreate
 from app.services.transactions import TransactionService
 from app.utils.categories import localize_category_name
-from app.utils.text import repair_text
 from app.utils.merchants import canonicalize_merchant
 from app.utils.subscriptions import is_subscription
+from app.utils.text import repair_text
 
 TARGET_FIELDS = ("date", "amount", "currency", "description", "category", "balance", "card")
 
