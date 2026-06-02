@@ -1,10 +1,6 @@
 # Finance Assistant Bot
 
 <p align="center">
-  <img src="docs/images/readme-hero.png" alt="Finance Assistant Bot portfolio demo cover" width="1000" />
-</p>
-
-<p align="center">
   <strong>Public portfolio/demo repository</strong> for a Telegram finance assistant with a FastAPI backend and responsive WebApp dashboard.
 </p>
 
@@ -21,6 +17,10 @@
 
 `manager-bot` is intentionally published as a portfolio/demo release, not as a hosted SaaS and not as a dump of private client code.
 
+<p align="center">
+  <img src="docs/images/screenshot-desktop-dashboard.png" alt="Real desktop dashboard screenshot" width="1000" />
+</p>
+
 This repository is designed to show:
 
 - Telegram bot flow design.
@@ -32,15 +32,15 @@ This repository is designed to show:
 ## Screenshots
 
 <p align="center">
-  <img src="docs/images/readme-dashboard.png" alt="Finance Assistant dashboard preview" width="1000" />
+  <img src="docs/images/screenshot-budget-goals.png" alt="Real budget goals screenshot" width="1000" />
 </p>
 
 <p align="center">
-  <img src="docs/images/readme-responsive.png" alt="Responsive Telegram WebApp preview" width="1000" />
+  <img src="docs/images/screenshot-tablet-overview.png" alt="Real tablet overview screenshot" width="700" />
 </p>
 
 <p align="center">
-  <img src="docs/images/readme-demo-scope.png" alt="Portfolio demo scope and product flow" width="1000" />
+  <img src="docs/images/screenshot-mobile-overview.png" alt="Real mobile overview screenshot" width="390" />
 </p>
 
 ## Feature Map
@@ -159,7 +159,7 @@ Included:
 - Source code for the bot, API, services, WebApp, migrations, tests, and CI.
 - Placeholder configuration in `.env.example`.
 - Local/Docker setup for demo and portfolio review.
-- README visuals generated from demo-safe screenshots.
+- README visuals captured from the running demo project.
 
 Not included:
 
@@ -191,7 +191,7 @@ portfolio, demo-project, telegram-bot, fastapi, finance-dashboard, webapp, sqlal
 Social preview:
 
 ```text
-docs/images/readme-hero.png
+docs/images/screenshot-desktop-dashboard.png
 ```
 
 ## Release
